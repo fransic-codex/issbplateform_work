@@ -6,7 +6,6 @@
     "watchPaths": ["src"]
   },
   "deploy": {
-    "startCommand": "npm install && npm run preview",
     "healthcheckPath": "/"
   }
 }
