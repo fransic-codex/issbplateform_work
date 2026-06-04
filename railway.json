@@ -5,7 +5,10 @@
       "path": "backend"
     },
     "frontend": {
-      "path": "frontend"
+      "path": "frontend",
+      "build": {
+        "builder": "NIXPACKS"
+      }
     }
   }
 }
