@@ -1,0 +1,11 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "services": {
+    "backend": {
+      "path": "backend"
+    },
+    "frontend": {
+      "path": "frontend"
+    }
+  }
+}

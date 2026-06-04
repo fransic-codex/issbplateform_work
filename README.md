@@ -251,6 +251,85 @@ npm run build
 npm run preview
 ```
 
+## Railway Deployment
+
+This project is configured for deployment on Railway. Follow these steps to deploy:
+
+### Prerequisites
+- A Railway account (sign up at railway.app)
+- Git repository with your code
+- Railway CLI (optional)
+
+### Deployment Steps
+
+1. **Push your code to a Git repository** (GitHub, GitLab, or Bitbucket)
+
+2. **Connect to Railway**:
+   - Go to railway.app and log in
+   - Click "New Project" → "Deploy from GitHub repo"
+   - Select your repository
+
+3. **Configure Services**:
+   - Railway will automatically detect the monorepo structure
+   - Two services will be created:
+     - `backend` (Node.js service)
+     - `frontend` (Static site service)
+
+4. **Set Environment Variables**:
+   
+   For the **Backend** service, add these variables:
+   ```
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_secure_jwt_secret
+   JWT_EXPIRE=7d
+   NODE_ENV=production
+   ```
+   
+   - For MongoDB, you can either:
+     - Use Railway's MongoDB plugin (recommended)
+     - Provide your own MongoDB Atlas connection string
+   
+   - If using Railway's MongoDB plugin, the `RAILWAY_MONGODB_URI` variable will be automatically set
+
+5. **Configure Frontend API URL**:
+   
+   After the backend is deployed, Railway will provide a backend URL. Update the frontend to use this URL:
+   - Go to the frontend service settings
+   - Add environment variable: `VITE_API_URL=https://your-backend-url.railway.app`
+
+6. **Deploy**:
+   - Railway will automatically build and deploy both services
+   - Wait for the deployment to complete
+   - You'll receive public URLs for both services
+
+### Railway Configuration Files
+
+The project includes these Railway configuration files:
+- `railway.json` - Root configuration for monorepo
+- `backend/railway.json` - Backend service configuration
+- `frontend/railway.json` - Frontend service configuration
+
+### MongoDB Setup on Railway
+
+1. In your Railway project, click "New Service"
+2. Select "Database" → "MongoDB"
+3. Railway will provision a MongoDB instance
+4. The connection string will be available as `RAILWAY_MONGODB_URI` environment variable
+
+### Updating Backend URL in Frontend
+
+After deployment, you may need to update the API URL in your frontend code. The backend uses the environment variable `VITE_API_URL` if set, otherwise it defaults to localhost:5000.
+
+### Monitoring
+
+- View deployment logs in Railway dashboard
+- Monitor service health and metrics
+- Set up alerts for errors or downtime
+
+### Redeployment
+
+Any push to your connected Git branch will trigger automatic redeployment on Railway.
+
 ## Environment Variables
 
 ### Backend (.env)
@@ -296,5 +375,6 @@ For issues or questions, please contact the development team.
 - **Password**: admin123
 
 ⚠️ **Important**: Change the admin password after first login in production.
-#   i s s b p l a t e f o r m _ w o r k  
+#   i s s b p l a t e f o r m _ w o r k 
+ 
  
