@@ -17,9 +17,16 @@ app.use(express.urlencoded({ extended: true }));
 
 // Database Connection
 const mongoUri = process.env.MONGODB_URI || process.env.RAILWAY_MONGODB_URI;
+console.log('Connecting to MongoDB:', mongoUri ? mongoUri.substring(0, 30) + '...' : 'No URI provided');
+
 mongoose.connect(mongoUri)
-  .then(() => console.log('MongoDB Connected'))
-  .catch((err) => console.error('MongoDB Connection Error:', err));
+  .then(() => {
+    console.log('✅ MongoDB Connected Successfully');
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB Connection Error:', err.message);
+    process.exit(1);
+  });
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));

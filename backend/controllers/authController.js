@@ -15,9 +15,19 @@ exports.register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+    // Validate input
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Please provide name, email, and password' });
+    }
+
+    try {
+      const userExists = await User.findOne({ email });
+      if (userExists) {
+        return res.status(400).json({ message: 'Email already in use' });
+      }
+    } catch (dbError) {
+      console.error('Database query error:', dbError);
+      return res.status(500).json({ message: 'Database connection error. Please try again.' });
     }
 
     const user = await User.create({
@@ -40,7 +50,8 @@ exports.register = async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Registration error:', error);
+    res.status(500).json({ message: error.message || 'Failed to create account' });
   }
 };
 
