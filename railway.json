@@ -15,7 +15,7 @@
       "path": "frontend",
       "build": {
         "builder": "NIXPACKS",
-        "buildCommand": "npm install --legacy-peer-deps && node ./node_modules/vite/bin/vite.js build"
+        "buildCommand": "npm install --legacy-peer-deps && npm run build"
       },
       "deploy": {
         "startCommand": "npm run preview",
