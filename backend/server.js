@@ -8,17 +8,37 @@ dotenv.config();
 const app = express();
 
 // Middleware
-const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+// CORS Configuration with callback function (more reliable)
+const corsMiddleware = cors({
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'https://issbplateformwork-production.up.railway.app',
+      'http://localhost:3000',
+      'http://localhost:5173'
+    ];
+    
+    // Allow requests with no origin (mobile apps, curl requests)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`[CORS] Blocked origin: ${origin}`);
+      callback(new Error('CORS not allowed'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization']
-};
+});
 
-console.log('CORS Origin configured:', corsOptions.origin);
+// Apply CORS to all routes
+app.use(corsMiddleware);
 
-app.use(cors(corsOptions));
+// Explicit OPTIONS handling for preflight
+app.options('*', corsMiddleware);
+
+console.log('[CORS] Initialized for production');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -28,10 +48,10 @@ console.log('Connecting to MongoDB:', mongoUri ? mongoUri.substring(0, 30) + '..
 
 mongoose.connect(mongoUri)
   .then(() => {
-    console.log('✅ MongoDB Connected Successfully');
+    console.log(' MongoDB Connected Successfully');
   })
   .catch((err) => {
-    console.error('❌ MongoDB Connection Error:', err.message);
+    console.error('MongoDB Connection Error:', err.message);
     process.exit(1);
   });
 
