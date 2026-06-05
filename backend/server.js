@@ -9,16 +9,25 @@ const app = express();
 
 // Middleware
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: [
+    'https://issbplateformwork-production.up.railway.app',
+    'http://localhost:3000',
+    'http://localhost:5173',
+    process.env.CORS_ORIGIN
+  ].filter(Boolean),
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-console.log('CORS Origin configured:', corsOptions.origin);
+console.log('CORS Origins:', corsOptions.origin);
 
 app.use(cors(corsOptions));
+
+// Explicit preflight handling
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -28,10 +37,10 @@ console.log('Connecting to MongoDB:', mongoUri ? mongoUri.substring(0, 30) + '..
 
 mongoose.connect(mongoUri)
   .then(() => {
-    console.log('✅ MongoDB Connected Successfully');
+    console.log(' MongoDB Connected Successfully');
   })
   .catch((err) => {
-    console.error('❌ MongoDB Connection Error:', err.message);
+    console.error('MongoDB Connection Error:', err.message);
     process.exit(1);
   });
 
