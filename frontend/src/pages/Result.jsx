@@ -213,12 +213,26 @@ const Result = () => {
       <div className="glass-card p-6 sm:p-8 mb-8">
         <h3 className="text-lg font-bold text-white mb-4 flex items-center space-x-2">
           <span className="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]"></span>
-          <span>Psychological Evaluation Output</span>
+          <span>Standard Score Interpretation</span>
         </h3>
         <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line p-4 rounded-xl bg-slate-900/40 border border-slate-800/60">
           {result.interpretation}
         </p>
       </div>
+
+      {/* AI Profiling Interpretation */}
+      {result.aiAnalysis && (
+        <div className="glass-card p-6 sm:p-8 mb-8 relative overflow-hidden border border-purple-500/30">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl"></div>
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center space-x-2 relative z-10">
+            <BrainCircuit className="h-5 w-5 text-purple-400" />
+            <span className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">Expert AI Psychological Evaluation</span>
+          </h3>
+          <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line p-5 rounded-xl bg-slate-900/60 border border-purple-500/20 relative z-10">
+            {result.aiAnalysis}
+          </p>
+        </div>
+      )}
 
       {/* Answer Breakdown grid */}
       <div className="glass-card p-6 sm:p-8 mb-8">

@@ -22,6 +22,7 @@ exports.submitResult = async (req, res) => {
       percentage: scoreData.percentage,
       interpretation: scoreData.interpretation,
       level: scoreData.level,
+      aiAnalysis: scoreData.aiAnalysis,
       timeTaken: timeTaken || 0
     });
 

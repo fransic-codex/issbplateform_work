@@ -40,6 +40,10 @@ const resultSchema = new mongoose.Schema({
     enum: ['Excellent', 'Good', 'Average', 'Below Average', 'Poor'],
     required: true
   },
+  aiAnalysis: {
+    type: String,
+    default: 'Analysis pending or unavailable.'
+  },
   timeTaken: {
     type: Number,
     default: 0 // in seconds
