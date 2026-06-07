@@ -39,8 +39,8 @@ const Result = () => {
   const generateAIAnalysis = async (data) => {
     setIsGeneratingAI(true);
     try {
-      let prompt = `Act as an expert ISSB psychologist. Analyze the following candidate's answers for the test "${data.test.title}" (Category: ${data.test.category}).\n`;
-      prompt += `Provide a nuanced, accurate psychological assessment of their personality traits based on their answers. Be careful to note if they selected "Always" or high frequencies for negative traits, and provide realistic feedback rather than blindly praising them.\n\n`;
+      let prompt = `Act as an expert, encouraging psychologist speaking directly to a student. Analyze the following candidate's answers for the test "${data.test.title}" (Category: ${data.test.category}).\n`;
+      prompt += `Provide a clear, simple, and easy-to-understand psychological assessment of their personality traits based on their answers. Speak directly to the student using "You". Avoid complex clinical jargon, tables, or notes for assessors. Focus on giving them practical, encouraging feedback and realistic areas for improvement. Keep the formatting clean, simple, and student-friendly.\n\n`;
       prompt += `Candidate's Answers:\n`;
       
       data.answers.forEach((answer, index) => {
