@@ -14,10 +14,12 @@ const allowedOrigins = [
   'http://localhost:5173'
 ];
 
-// Add FRONTEND_URL from Railway environment (supports comma-separated values)
-if (process.env.FRONTEND_URL) {
-  process.env.FRONTEND_URL.split(',').forEach(url => {
-    allowedOrigins.push(url.trim());
+// Support both CORS_ORIGIN and FRONTEND_URL env variable names
+const corsEnv = process.env.CORS_ORIGIN || process.env.FRONTEND_URL;
+if (corsEnv) {
+  corsEnv.split(',').forEach(url => {
+    const trimmed = url.trim();
+    if (trimmed) allowedOrigins.push(trimmed);
   });
 }
 
