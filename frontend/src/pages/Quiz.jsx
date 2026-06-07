@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { testAPI, resultAPI } from '../services/api';
-import { ChevronLeft, ChevronRight, Clock, CheckCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 const Quiz = () => {
   const { testId } = useParams();
@@ -99,13 +99,20 @@ const Quiz = () => {
               <button
                 key={option.order}
                 onClick={() => handleAnswer(question._id, option.value)}
-                className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
+                className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 outline-none flex items-center justify-between group ${
                   selectedAnswer === option.value
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-gray-200 hover:border-primary-300'
+                    ? 'border-blue-500 bg-blue-500/10 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)]'
+                    : 'border-slate-800 bg-slate-900/40 text-slate-300 hover:border-slate-700 hover:bg-slate-800/40 hover:text-white'
                 }`}
               >
-                <span className="font-medium">{option.label}</span>
+                <span className="font-semibold text-sm group-hover:translate-x-0.5 transition-transform duration-200">
+                  {option.label}
+                </span>
+                <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ml-4 ${
+                  selectedAnswer === option.value ? 'border-blue-400 bg-blue-400/20' : 'border-slate-700'
+                }`}>
+                  {selectedAnswer === option.value && <div className="h-2 w-2 rounded-full bg-blue-400" />}
+                </div>
               </button>
             ))}
           </div>
@@ -113,18 +120,23 @@ const Quiz = () => {
 
       case 'true_false':
         return (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {question.options.map((option) => (
               <button
                 key={option.order}
                 onClick={() => handleAnswer(question._id, option.value)}
-                className={`p-6 rounded-lg border-2 transition-all ${
+                className={`p-6 rounded-xl border-2 transition-all duration-200 text-center flex flex-col items-center justify-center outline-none group ${
                   selectedAnswer === option.value
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-gray-200 hover:border-primary-300'
+                    ? 'border-blue-500 bg-blue-500/10 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)]'
+                    : 'border-slate-800 bg-slate-900/40 text-slate-300 hover:border-slate-700 hover:bg-slate-800/40 hover:text-white'
                 }`}
               >
-                <span className="font-medium text-lg">{option.label}</span>
+                <span className="font-bold text-lg">{option.label}</span>
+                <div className={`mt-3 h-4 w-4 rounded-full border-2 flex items-center justify-center ${
+                  selectedAnswer === option.value ? 'border-blue-400 bg-blue-400/20' : 'border-slate-700'
+                }`}>
+                  {selectedAnswer === option.value && <div className="h-2 w-2 rounded-full bg-blue-400" />}
+                </div>
               </button>
             ))}
           </div>
@@ -132,10 +144,11 @@ const Quiz = () => {
 
       case 'mcq':
         return (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {question.scenario && (
-              <div className="p-4 bg-blue-50 rounded-lg mb-4">
-                <p className="text-sm text-blue-800">{question.scenario}</p>
+              <div className="p-4 bg-blue-950/30 border border-blue-900/50 rounded-xl mb-2 flex items-start space-x-3">
+                <AlertTriangle className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-blue-300 leading-relaxed font-medium">{question.scenario}</p>
               </div>
             )}
             <div className="space-y-3">
@@ -143,13 +156,20 @@ const Quiz = () => {
                 <button
                   key={option.order}
                   onClick={() => handleAnswer(question._id, option.value)}
-                  className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
+                  className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 outline-none flex items-center justify-between group ${
                     selectedAnswer === option.value
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-gray-200 hover:border-primary-300'
+                      ? 'border-blue-500 bg-blue-500/10 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)]'
+                      : 'border-slate-800 bg-slate-900/40 text-slate-300 hover:border-slate-700 hover:bg-slate-800/40 hover:text-white'
                   }`}
                 >
-                  <span className="font-medium">{option.label}</span>
+                  <span className="font-semibold text-sm group-hover:translate-x-0.5 transition-transform duration-200">
+                    {option.label}
+                  </span>
+                  <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ml-4 ${
+                    selectedAnswer === option.value ? 'border-blue-400 bg-blue-400/20' : 'border-slate-700'
+                  }`}>
+                    {selectedAnswer === option.value && <div className="h-2 w-2 rounded-full bg-blue-400" />}
+                  </div>
                 </button>
               ))}
             </div>
@@ -163,21 +183,25 @@ const Quiz = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading test...</p>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4">
+        <div className="relative flex items-center justify-center">
+          <div className="absolute w-16 h-16 rounded-full border-4 border-blue-500/20 border-t-blue-500 animate-spin"></div>
+          <BrainCircuit className="h-8 w-8 text-blue-400 animate-pulse" />
         </div>
+        <p className="mt-6 text-slate-400 font-medium tracking-wide animate-pulse">Loading assessment details...</p>
       </div>
     );
   }
 
   if (!test || questions.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
-        <div className="text-center">
-          <p className="text-gray-600">Test not found or has no questions.</p>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] text-center px-4">
+        <AlertTriangle className="h-16 w-16 text-yellow-500/80 mb-4 animate-bounce" />
+        <h3 className="text-xl font-bold text-white">Assessment unavailable</h3>
+        <p className="text-slate-400 mt-2">The requested test contains no questions or could not be found.</p>
+        <button onClick={() => navigate('/dashboard')} className="mt-6 btn-premium-primary">
+          Back to Dashboard
+        </button>
       </div>
     );
   }
@@ -187,42 +211,60 @@ const Quiz = () => {
   const answeredCount = Object.keys(answers).length;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{test.title}</h1>
-        <p className="text-gray-600 mb-4">{test.instructions}</p>
-        
-        {/* Progress Bar */}
-        <div className="bg-gray-200 rounded-full h-3 mb-4">
-          <div
-            className="bg-primary-600 h-3 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-        
-        <div className="flex items-center justify-between text-sm text-gray-600">
-          <div className="flex items-center space-x-2">
-            <CheckCircle className="h-4 w-4" />
-            <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Clock className="h-4 w-4" />
-            <span>{formatTime(timeElapsed)}</span>
-          </div>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+      {/* Header Panel */}
+      <div className="glass-card p-6 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-800/80 pb-4 mb-4 gap-4">
           <div>
-            <span>Answered: {answeredCount}/{questions.length}</span>
+            <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-2">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span>Assessment Profile</span>
+            </div>
+            <h1 className="text-2xl font-black text-white">{test.title}</h1>
+          </div>
+          <div className="flex items-center space-x-4 self-start sm:self-center">
+            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-300 font-semibold text-xs">
+              <Clock className="h-4 w-4 text-blue-400" />
+              <span>{formatTime(timeElapsed)}</span>
+            </div>
+            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-300 font-semibold text-xs">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              <span>{answeredCount}/{questions.length} Complete</span>
+            </div>
+          </div>
+        </div>
+        <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">{test.instructions}</p>
+
+        {/* Progress Bar Container */}
+        <div className="mt-6">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
+            <span>Evaluation progress</span>
+            <span>{Math.round(progress)}%</span>
+          </div>
+          <div className="bg-slate-900 rounded-full h-2.5 w-full overflow-hidden border border-slate-800/50">
+            <div
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2.5 rounded-full transition-all duration-300 ease-out shadow-[0_0_10px_rgba(59,130,246,0.3)]"
+              style={{ width: `${progress}%` }}
+            ></div>
           </div>
         </div>
       </div>
 
-      {/* Question Card */}
-      <div className="card mb-6">
+      {/* Active Question Box */}
+      <div className="glass-card p-6 sm:p-8 mb-6 relative overflow-hidden">
+        {/* Glow corner */}
+        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl"></div>
+
         <div className="mb-6">
-          <span className="inline-block px-3 py-1 text-xs font-medium bg-primary-100 text-primary-800 rounded-full mb-4">
-            {currentQuestion.questionType.replace('_', ' ').toUpperCase()}
-          </span>
-          <h2 className="text-xl font-semibold text-gray-900">
+          <div className="flex items-center space-x-2 mb-3">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-blue-950/60 text-blue-300 border border-blue-900/50">
+              Q-{currentQuestionIndex + 1}
+            </span>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-300 capitalize">
+              {currentQuestion.questionType.replace('_', ' ')}
+            </span>
+          </div>
+          <h2 className="text-lg sm:text-xl font-bold text-white leading-relaxed">
             {currentQuestion.questionText}
           </h2>
         </div>
@@ -230,14 +272,14 @@ const Quiz = () => {
         {renderQuestionOptions(currentQuestion)}
       </div>
 
-      {/* Navigation */}
+      {/* Action Footer */}
       <div className="flex items-center justify-between">
         <button
           onClick={handlePrevious}
           disabled={currentQuestionIndex === 0}
-          className="flex items-center space-x-2 px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="btn-premium-secondary disabled:opacity-30 disabled:cursor-not-allowed text-sm py-2.5 px-4"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="h-4 w-4" />
           <span>Previous</span>
         </button>
 
@@ -245,39 +287,43 @@ const Quiz = () => {
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="flex items-center space-x-2 px-6 py-3 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-premium-primary text-sm py-2.5 px-5 shadow-lg shadow-blue-500/20"
           >
-            <CheckCircle className="h-5 w-5" />
-            <span>{submitting ? 'Submitting...' : 'Submit Test'}</span>
+            <CheckCircle2 className="h-4 w-4" />
+            <span>{submitting ? 'Submitting...' : 'Submit Evaluation'}</span>
           </button>
         ) : (
           <button
             onClick={handleNext}
-            className="flex items-center space-x-2 px-6 py-3 btn-primary"
+            className="btn-premium-primary text-sm py-2.5 px-5"
           >
-            <span>Next</span>
-            <ChevronRight className="h-5 w-5" />
+            <span>Next Question</span>
+            <ChevronRight className="h-4 w-4" />
           </button>
         )}
       </div>
 
-      {/* Question Navigation Dots */}
-      <div className="mt-8 flex flex-wrap gap-2 justify-center">
-        {questions.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentQuestionIndex(index)}
-            className={`w-8 h-8 rounded-full text-sm font-medium transition-all ${
-              index === currentQuestionIndex
-                ? 'bg-primary-600 text-white'
-                : answers[questions[index]._id]
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {index + 1}
-          </button>
-        ))}
+      {/* Grid of Dots */}
+      <div className="glass-card mt-8 p-4 flex flex-wrap gap-2.5 justify-center">
+        {questions.map((q, index) => {
+          const isCurrent = index === currentQuestionIndex;
+          const isAnswered = !!answers[q._id];
+          return (
+            <button
+              key={q._id}
+              onClick={() => setCurrentQuestionIndex(index)}
+              className={`w-9 h-9 rounded-xl text-xs font-bold transition-all duration-200 border flex items-center justify-center outline-none ${
+                isCurrent
+                  ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_10px_rgba(59,130,246,0.35)] scale-105'
+                  : isAnswered
+                  ? 'bg-emerald-500/10 border-emerald-500/35 text-emerald-400 hover:bg-emerald-500/20'
+                  : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+              }`}
+            >
+              {index + 1}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
