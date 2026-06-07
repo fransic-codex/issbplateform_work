@@ -79,11 +79,22 @@ app.use('/api/tests', require('./routes/tests'));
 app.use('/api/questions', require('./routes/questions'));
 app.use('/api/results', require('./routes/results'));
 
-// Error Handler
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
+// Error Handler - ensure CORS headers are present even on errors
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Error:', err.message);
+  
+  // If it's a CORS error, send a clear response
+  if (err.message === 'CORS not allowed') {
+    return res.status(403).json({ message: 'CORS: Origin not allowed' });
+  }
+  
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));

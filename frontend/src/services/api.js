@@ -1,11 +1,15 @@
 import axios from 'axios';
 
-// In production (Railway), VITE_API_URL must be set during build.
-// Fallback: use current origin + /api (works if behind a reverse proxy)
-// Dev fallback: localhost:5000
+// In production (Railway), VITE_API_URL should be set during build.
+// It can be either "https://backend.up.railway.app" or "https://backend.up.railway.app/api"
+// We auto-append /api if missing.
 const getBaseURL = () => {
   if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+    let url = import.meta.env.VITE_API_URL.replace(/\/+$/, ''); // trim trailing slashes
+    if (!url.endsWith('/api')) {
+      url += '/api';
+    }
+    return url;
   }
   // In production, try same-origin /api (useful if proxied)
   if (import.meta.env.PROD) {
