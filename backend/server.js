@@ -8,22 +8,39 @@ dotenv.config();
 const app = express();
 
 // Middleware
-// CORS Configuration with callback function (more reliable)
+// Build allowed origins from environment + defaults
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
+
+// Add FRONTEND_URL from Railway environment (supports comma-separated values)
+if (process.env.FRONTEND_URL) {
+  process.env.FRONTEND_URL.split(',').forEach(url => {
+    allowedOrigins.push(url.trim());
+  });
+}
+
+console.log('[CORS] Allowed origins:', allowedOrigins);
+
 const corsMiddleware = cors({
   origin: function (origin, callback) {
-    const allowedOrigins = [
-      'https://issbplateformwork-production.up.railway.app',
-      'http://localhost:3000',
-      'http://localhost:5173'
-    ];
-    
-    // Allow requests with no origin (mobile apps, curl requests)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn(`[CORS] Blocked origin: ${origin}`);
-      callback(new Error('CORS not allowed'));
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin) {
+      return callback(null, true);
     }
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // In production, also allow any *.railway.app origin
+    if (origin.endsWith('.railway.app')) {
+      return callback(null, true);
+    }
+    
+    console.warn(`[CORS] Blocked origin: ${origin}`);
+    callback(new Error('CORS not allowed'));
   },
   credentials: true,
   optionsSuccessStatus: 200,
@@ -37,7 +54,7 @@ app.use(corsMiddleware);
 // Explicit OPTIONS handling for preflight
 app.options('*', corsMiddleware);
 
-console.log('[CORS] Initialized for production');
+console.log('[CORS] Initialized');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

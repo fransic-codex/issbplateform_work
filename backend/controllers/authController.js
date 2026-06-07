@@ -51,6 +51,18 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     console.error('Registration error:', error);
+    
+    // Handle MongoDB duplicate key error
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Email already in use' });
+    }
+    
+    // Handle Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(e => e.message);
+      return res.status(400).json({ message: messages.join('. ') });
+    }
+    
     res.status(500).json({ message: error.message || 'Failed to create account' });
   }
 };

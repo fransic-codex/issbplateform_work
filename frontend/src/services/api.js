@@ -1,6 +1,20 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// In production (Railway), VITE_API_URL must be set during build.
+// Fallback: use current origin + /api (works if behind a reverse proxy)
+// Dev fallback: localhost:5000
+const getBaseURL = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  // In production, try same-origin /api (useful if proxied)
+  if (import.meta.env.PROD) {
+    return window.location.origin + '/api';
+  }
+  return 'http://localhost:5000/api';
+};
+
+const API_BASE_URL = getBaseURL();
 
 const api = axios.create({
   baseURL: API_BASE_URL,

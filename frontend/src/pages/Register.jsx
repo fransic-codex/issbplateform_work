@@ -30,7 +30,8 @@ const Register = () => {
       await register(name, email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Failed to create account. Email may already be in use.');
+      const message = err?.response?.data?.message || err?.message || 'Failed to create account. Please try again.';
+      setError(message);
     }
   };
 
