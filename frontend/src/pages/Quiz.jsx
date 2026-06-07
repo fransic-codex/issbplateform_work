@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { testAPI, resultAPI } from '../services/api';
-import { ChevronLeft, ChevronRight, Clock, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, CheckCircle2, AlertTriangle, ShieldCheck, BrainCircuit } from 'lucide-react';
 
 const Quiz = () => {
   const { testId } = useParams();
