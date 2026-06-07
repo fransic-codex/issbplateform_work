@@ -64,9 +64,22 @@ const Result = () => {
       const response = await window.puter.ai.chat(prompt);
       
       let responseText = "Failed to parse AI response.";
-      if (typeof response === 'string') responseText = response;
-      else if (response?.message?.content) responseText = response.message.content;
-      else if (response?.toString) responseText = response.toString();
+      if (typeof response === 'string') {
+        responseText = response;
+      } else if (response?.message?.content) {
+        if (Array.isArray(response.message.content)) {
+          // Extract text from array of content objects e.g. [{ type: "text", text: "..." }]
+          responseText = response.message.content.map(c => c.text || '').join('');
+        } else if (typeof response.message.content === 'string') {
+          responseText = response.message.content;
+        } else {
+          responseText = JSON.stringify(response.message.content);
+        }
+      } else if (response?.text) {
+        responseText = response.text;
+      } else if (response?.toString) {
+        responseText = response.toString();
+      }
       
       setAiAnalysis(responseText);
     } catch (error) {
