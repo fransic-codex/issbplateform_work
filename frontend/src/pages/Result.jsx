@@ -39,8 +39,15 @@ const Result = () => {
   const generateAIAnalysis = async (data) => {
     setIsGeneratingAI(true);
     try {
-      let prompt = `Act as an expert, encouraging psychologist speaking directly to a student. Analyze the following candidate's answers for the test "${data.test.title}" (Category: ${data.test.category}).\n`;
-      prompt += `Provide a clear, simple, and easy-to-understand psychological assessment of their personality traits based on their answers. Speak directly to the student using "You". Avoid complex clinical jargon, tables, or notes for assessors. Focus on giving them practical, encouraging feedback and realistic areas for improvement. Keep the formatting clean, simple, and student-friendly.\n\n`;
+      let prompt = `You are a professional ISSB (Inter Services Selection Board) psychologist from Pakistan with 20+ years of experience. You are evaluating a candidate's psychological test for military officer selection.\n`;
+      prompt += `The test is: "${data.test.title}" (Category: ${data.test.category}).\n\n`;
+      prompt += `Based on the candidate's answers below, write a personal, easy-to-understand psychological evaluation DIRECTLY to the candidate (use "You"). Your tone should be honest, constructive and supportive — like a real psychologist giving feedback after a session.\n\n`;
+      prompt += `Structure your response in this simple format:\n`;
+      prompt += `1. **Overall Impression** - 2-3 sentences summarizing who they are psychologically\n`;
+      prompt += `2. **Your Strengths** - 2-4 bullet points of genuine positive traits shown in the answers\n`;
+      prompt += `3. **Areas to Work On** - 2-3 honest, constructive areas for improvement relevant to ISSB standards\n`;
+      prompt += `4. **ISSB Suitability** - One short paragraph on whether this profile suits military officer qualities and what to focus on before the actual ISSB.\n\n`;
+      prompt += `Keep the language simple, direct, and student-friendly. No clinical jargon. No tables. Speak like a real psychologist to a young candidate.\n\n`;
       prompt += `Candidate's Answers:\n`;
       
       data.answers.forEach((answer, index) => {
