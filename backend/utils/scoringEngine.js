@@ -1,36 +1,5 @@
 const Test = require('../models/Test');
 const Question = require('../models/Question');
-const { puter } = require('@heyputer/puter.js');
-
-const generateAIAnalysis = async (test, questions, answers) => {
-  try {
-    let prompt = `Act as an expert ISSB psychologist. Analyze the following candidate's answers for the test "${test.title}" (Category: ${test.category}).\n`;
-    prompt += `Provide a nuanced, accurate psychological assessment of their personality traits based on their answers. Be careful to note if they selected "Always" or high frequencies for negative traits, and provide realistic feedback rather than blindly praising them.\n\n`;
-    prompt += `Candidate's Answers:\n`;
-    
-    questions.forEach((q, index) => {
-      const userAnswer = answers.find(a => a.questionId === q._id.toString());
-      if (userAnswer) {
-        let answerLabel = userAnswer.selectedOption;
-        const option = q.options.find(o => o.value === userAnswer.selectedOption);
-        if (option) answerLabel = option.label;
-        
-        prompt += `${index + 1}. Statement: ${q.questionText}\n   Answer: ${answerLabel}\n`;
-      }
-    });
-    
-    prompt += `\nProvide a comprehensive summary of their psychological profile based on these specific answers.`;
-
-    const response = await puter.ai.chat(prompt, {
-      model: 'gemini-1.5-flash'
-    });
-    
-    return response.message.content || response.toString() || response;
-  } catch (error) {
-    console.error("Puter AI Error:", error);
-    return "AI Analysis could not be generated at this time due to an error processing the request.";
-  }
-};
 
 // Calculate score based on test type and answers
 exports.calculateScore = async (testId, answers) => {
@@ -93,17 +62,13 @@ exports.calculateScore = async (testId, answers) => {
     // Determine level and interpretation
     const { level, interpretation } = getInterpretation(percentage, test.category);
 
-    // Generate AI Analysis
-    const aiAnalysis = await generateAIAnalysis(test, questions, answers);
-
     return {
       totalScore: finalScore,
       maxScore: maxScore,
       percentage: percentage,
       answers: answerDetails,
       level,
-      interpretation,
-      aiAnalysis
+      interpretation
     };
   } catch (error) {
     throw new Error(`Scoring error: ${error.message}`);

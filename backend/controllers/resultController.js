@@ -54,7 +54,8 @@ exports.getResult = async (req, res) => {
   try {
     const result = await Result.findById(req.params.id)
       .populate('test')
-      .populate('user', 'name email');
+      .populate('user', 'name email')
+      .populate('answers.question');
 
     if (!result) {
       return res.status(404).json({ message: 'Result not found' });

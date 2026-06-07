@@ -9,6 +9,8 @@ const Result = () => {
   const navigate = useNavigate();
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [aiAnalysis, setAiAnalysis] = useState('');
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   useEffect(() => {
     fetchResult();
@@ -17,12 +19,57 @@ const Result = () => {
   const fetchResult = async () => {
     try {
       const response = await resultAPI.getResult(resultId);
-      setResult(response.data.data);
+      const data = response.data.data;
+      setResult(data);
+      
+      // Attempt to generate AI analysis on the client side
+      if (window.puter) {
+        generateAIAnalysis(data);
+      } else {
+        setAiAnalysis("Puter.js could not be loaded. Please check your internet connection.");
+      }
     } catch (error) {
       console.error('Error fetching result:', error);
       navigate('/dashboard');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generateAIAnalysis = async (data) => {
+    setIsGeneratingAI(true);
+    try {
+      let prompt = `Act as an expert ISSB psychologist. Analyze the following candidate's answers for the test "${data.test.title}" (Category: ${data.test.category}).\n`;
+      prompt += `Provide a nuanced, accurate psychological assessment of their personality traits based on their answers. Be careful to note if they selected "Always" or high frequencies for negative traits, and provide realistic feedback rather than blindly praising them.\n\n`;
+      prompt += `Candidate's Answers:\n`;
+      
+      data.answers.forEach((answer, index) => {
+        const question = answer.question;
+        if (question && question.questionText) {
+          let answerLabel = answer.selectedOption;
+          if (question.options) {
+            const option = question.options.find(o => o.value === answer.selectedOption);
+            if (option) answerLabel = option.label;
+          }
+          prompt += `${index + 1}. Statement: ${question.questionText}\n   Answer: ${answerLabel}\n`;
+        }
+      });
+      
+      prompt += `\nProvide a comprehensive summary of their psychological profile based on these specific answers.`;
+
+      const response = await window.puter.ai.chat(prompt, { model: 'gemini-1.5-flash' });
+      
+      let responseText = "Failed to parse AI response.";
+      if (typeof response === 'string') responseText = response;
+      else if (response?.message?.content) responseText = response.message.content;
+      else if (response?.toString) responseText = response.toString();
+      
+      setAiAnalysis(responseText);
+    } catch (error) {
+      console.error("AI Generation Error:", error);
+      setAiAnalysis("The Expert AI Evaluation could not be generated at this time.");
+    } finally {
+      setIsGeneratingAI(false);
     }
   };
 
@@ -221,15 +268,22 @@ const Result = () => {
       </div>
 
       {/* AI Profiling Interpretation */}
-      {result.aiAnalysis && (
+      {(aiAnalysis || isGeneratingAI) && (
         <div className="glass-card p-6 sm:p-8 mb-8 relative overflow-hidden border border-purple-500/30">
           <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl"></div>
           <h3 className="text-lg font-bold text-white mb-4 flex items-center space-x-2 relative z-10">
-            <BrainCircuit className="h-5 w-5 text-purple-400" />
+            <BrainCircuit className={`h-5 w-5 text-purple-400 ${isGeneratingAI ? 'animate-spin' : ''}`} />
             <span className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">Expert AI Psychological Evaluation</span>
           </h3>
-          <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line p-5 rounded-xl bg-slate-900/60 border border-purple-500/20 relative z-10">
-            {result.aiAnalysis}
+          <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line p-5 rounded-xl bg-slate-900/60 border border-purple-500/20 relative z-10 min-h-[100px] flex items-center">
+            {isGeneratingAI ? (
+              <span className="flex items-center space-x-2 text-purple-300 animate-pulse">
+                <BrainCircuit className="h-4 w-4" />
+                <span>Puter AI is analyzing your responses...</span>
+              </span>
+            ) : (
+              aiAnalysis
+            )}
           </p>
         </div>
       )}
