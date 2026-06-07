@@ -57,7 +57,11 @@ const Result = () => {
       
       prompt += `\nProvide a comprehensive summary of their psychological profile based on these specific answers.`;
 
-      const response = await window.puter.ai.chat(prompt, { model: 'gemini-1.5-flash' });
+      if (window.puter) {
+        window.puter.quiet = true;
+      }
+      
+      const response = await window.puter.ai.chat(prompt);
       
       let responseText = "Failed to parse AI response.";
       if (typeof response === 'string') responseText = response;
