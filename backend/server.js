@@ -61,16 +61,31 @@ app.use(express.urlencoded({ extended: true }));
 
 // Database Connection
 const mongoUri = process.env.MONGODB_URI || process.env.RAILWAY_MONGODB_URI;
-console.log('Connecting to MongoDB:', mongoUri ? mongoUri.substring(0, 30) + '...' : 'No URI provided');
+console.log('Connecting to MongoDB:', mongoUri ? mongoUri.substring(0, 30) + '...' : 'No URI provided - check MONGODB_URI env variable');
 
-mongoose.connect(mongoUri)
+if (!mongoUri) {
+  console.error('FATAL: MONGODB_URI environment variable is not set!');
+}
+
+// Connect to MongoDB but DON'T exit if it fails - server must stay alive
+mongoose.connect(mongoUri || 'invalid')
   .then(() => {
-    console.log(' MongoDB Connected Successfully');
+    console.log('MongoDB Connected Successfully');
   })
   .catch((err) => {
     console.error('MongoDB Connection Error:', err.message);
-    process.exit(1);
+    console.error('Server will continue running - fix MONGODB_URI in Railway environment variables');
   });
+
+// Middleware: block API requests if DB not connected
+app.use('/api', (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ 
+      message: 'Database not connected. Please check MONGODB_URI environment variable in Railway.' 
+    });
+  }
+  next();
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -97,4 +112,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`MongoDB state: ${mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'}`);
+});
