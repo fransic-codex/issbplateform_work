@@ -1,15 +1,9 @@
 const Test = require('../models/Test');
 const Question = require('../models/Question');
-const { GoogleGenAI } = require('@google/genai');
+const { puter } = require('@heyputer/puter.js');
 
 const generateAIAnalysis = async (test, questions, answers) => {
-  if (!process.env.GEMINI_API_KEY) {
-    return "AI Analysis is unavailable because GEMINI_API_KEY is not configured in the environment.";
-  }
-  
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-    
     let prompt = `Act as an expert ISSB psychologist. Analyze the following candidate's answers for the test "${test.title}" (Category: ${test.category}).\n`;
     prompt += `Provide a nuanced, accurate psychological assessment of their personality traits based on their answers. Be careful to note if they selected "Always" or high frequencies for negative traits, and provide realistic feedback rather than blindly praising them.\n\n`;
     prompt += `Candidate's Answers:\n`;
@@ -27,14 +21,13 @@ const generateAIAnalysis = async (test, questions, answers) => {
     
     prompt += `\nProvide a comprehensive summary of their psychological profile based on these specific answers.`;
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
+    const response = await puter.ai.chat(prompt, {
+      model: 'gemini-1.5-flash'
     });
     
-    return response.text;
+    return response.message.content || response.toString() || response;
   } catch (error) {
-    console.error("Gemini API Error:", error);
+    console.error("Puter AI Error:", error);
     return "AI Analysis could not be generated at this time due to an error processing the request.";
   }
 };
